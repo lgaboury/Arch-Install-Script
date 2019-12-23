@@ -1,6 +1,6 @@
 #!/bin/bash
 # This script can be run by executing the following:
-#   curl -sL https://git.io/vAoV8 | bash
+#   curl -sL https://raw.githubusercontent.com/lgaboury/Arch-Insall-Script/master/arch-install.sh?token=AL7XRY6CVWVAPU6AS4ONFX26AEH5Q | bash
 set -uo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
