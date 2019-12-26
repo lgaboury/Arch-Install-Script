@@ -4,105 +4,83 @@
 set -uo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
-REPO_URL="https://s3.eu-west-2.amazonaws.com/mdaffin-arch/repo/x86_64"
-MIRRORLIST_URL="https://www.archlinux.org/mirrorlist/?country=GB&protocol=https&use_mirror_status=on"
+### Connect to the internet ###
+wifi-menu
+sleep 5
 
+### Update the system clock ###
+timedatectl set-ntp true
+
+### Parition the disk ###
+parted --script /dev/sda \
+    mklabel gpt \
+    mkpart primary fat32 1Mib 100MiB \
+    set 1 esp on \
+    mkpart primary linux-swap 100MiB 10GiB \
+    mkpart primary btrfs 10GiB 100%
+
+### Format the partitions ###
+mkfs.fat -F32 /dev/sda1
+mkfs.ext4 /dev/sda3
+mkswap /dev/sda2
+swapon /dev/sda2
+
+### Mount the file systems ###
+mount /dev/sda3 /mnt
+mkdir /mnt/boot
+mount /dev/sda1 /mnt/boot
+
+### Select the mirrors ####
+MIRRORLIST_URL="https://www.archlinux.org/mirrorlist/?country=CA&protocol=https&use_mirror_status=on"
 pacman -Sy --noconfirm pacman-contrib
-
-echo "Updating mirror list"
 curl -s "$MIRRORLIST_URL" | \
     sed -e 's/^#Server/Server/' -e '/^#/d' | \
     rankmirrors -n 5 - > /etc/pacman.d/mirrorlist
+sed -i 's/#TotalDownload/TotalDownload' /etc/pacman.conf
 
-### Get infomation from user ###
-hostname=$(dialog --stdout --inputbox "Enter hostname" 0 0) || exit 1
-clear
-: ${hostname:?"hostname cannot be empty"}
+### Install essential packages ###
+pacstrap /mnt base linux-lts linux-firmware nano man-db man-pages ntfs-3g networkmanager sudo \
+    pacman-contrib sddm sddm-kcm plasma ark dolphin kdf firefox konsole kate okular print-manager \
+    yakuake nss-mdns breeze breeze-gtk cups cups-pdf firewalld hplip intel-ucode ksysguard \
+    pulseaudio-bluetooth system-config-printer
+sed -i 's/#TotalDownload/TotalDownload' /mnt/etc/pacman.conf
 
-user=$(dialog --stdout --inputbox "Enter admin username" 0 0) || exit 1
-clear
-: ${user:?"user cannot be empty"}
-
-password=$(dialog --stdout --passwordbox "Enter admin password" 0 0) || exit 1
-clear
-: ${password:?"password cannot be empty"}
-password2=$(dialog --stdout --passwordbox "Enter admin password again" 0 0) || exit 1
-clear
-[[ "$password" == "$password2" ]] || ( echo "Passwords did not match"; exit 1; )
-
-devicelist=$(lsblk -dplnx size -o name,size | grep -Ev "boot|rpmb|loop" | tac)
-device=$(dialog --stdout --menu "Select installtion disk" 0 0 0 ${devicelist}) || exit 1
-clear
-
-### Set up logging ###
-exec 1> >(tee "stdout.log")
-exec 2> >(tee "stderr.log")
-
-timedatectl set-ntp true
-
-### Setup the disk and partitions ###
-swap_size=$(free --mebi | awk '/Mem:/ {print $2}')
-swap_end=$(( $swap_size + 129 + 1 ))MiB
-
-parted --script "${device}" -- mklabel gpt \
-  mkpart ESP fat32 1Mib 129MiB \
-  set 1 boot on \
-  mkpart primary linux-swap 129MiB ${swap_end} \
-  mkpart primary ext4 ${swap_end} 100%
-
-# Simple globbing was not enough as on one device I needed to match /dev/mmcblk0p1 
-# but not /dev/mmcblk0boot1 while being able to match /dev/sda1 on other devices.
-part_boot="$(ls ${device}* | grep -E "^${device}p?1$")"
-part_swap="$(ls ${device}* | grep -E "^${device}p?2$")"
-part_root="$(ls ${device}* | grep -E "^${device}p?3$")"
-
-wipefs "${part_boot}"
-wipefs "${part_swap}"
-wipefs "${part_root}"
-
-mkfs.vfat -F32 "${part_boot}"
-mkswap "${part_swap}"
-mkfs.f2fs -f "${part_root}"
-
-swapon "${part_swap}"
-mount "${part_root}" /mnt
-mkdir /mnt/boot
-mount "${part_boot}" /mnt/boot
-
-### Install and configure the basic system ###
-cat >>/etc/pacman.conf <<EOF
-[mdaffin]
-SigLevel = Optional TrustAll
-Server = $REPO_URL
-EOF
-
-pacstrap /mnt mdaffin-desktop
+### Generate fstab ###
 genfstab -t PARTUUID /mnt >> /mnt/etc/fstab
-echo "${hostname}" > /mnt/etc/hostname
 
-cat >>/mnt/etc/pacman.conf <<EOF
-[mdaffin]
-SigLevel = Optional TrustAll
-Server = $REPO_URL
+### Set timezone ###
+ln -sf /mnt/usr/share/zoneinfo/Canada/Central /mnt/etc/localtime
+arch-chroot /mnt hwclock --systohc
+
+### Set localization ###
+sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8' /mnt/etc/locale.gen
+arch-chroot /mnt locale-gen
+echo "LANG=en_US.UTF-8" > /mnt/etc/locale.conf
+
+### Network configuration ###
+echo "acer-e5-575g" > /mnt/etc/hostname
+cat >>/mnt/etc/hosts <<EOF
+127.0.0.1   localhost
+::1         localhost
+127.0.1.1   acer-e5-575g.localdomain    acer-e5-575g
 EOF
 
-arch-chroot /mnt bootctl install
+#### Set password ###
+echo "root:Ga3our&01" | chpasswd --root /mnt
 
-cat <<EOF > /mnt/boot/loader/loader.conf
-default arch
-EOF
+#### Set sudo ####
+sed -i 's/#%wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL' /mnt/etc/sudoers
 
-cat <<EOF > /mnt/boot/loader/entries/arch.conf
-title    Arch Linux
-linux    /vmlinuz-linux
-initrd   /initramfs-linux.img
-options  root=PARTUUID=$(blkid -s PARTUUID -o value "$part_root") rw
-EOF
+### Enable required services
+arch-chroot /mnt systemctl enable NetworkManager.service
+arch-chroot /mnt systemctl enable sddm.service
+arch-chroot /mnt systemctl enable org.cups.cupsd.service
+arch-chroot /mnt systemctl enable bluetooth.service
+arch-chroot /mnt systemctl enable avahi-daemon.service
+arch-chroot /mnt systemctl enable firewalld.service
+arch-chroot /mnt systemctl enable bluetooth.service
 
-echo "LANG=en_GB.UTF-8" > /mnt/etc/locale.conf
-
+### Create user ###
 arch-chroot /mnt useradd -mU -s /usr/bin/zsh -G wheel,uucp,video,audio,storage,games,input "$user"
 arch-chroot /mnt chsh -s /usr/bin/zsh
-
 echo "$user:$password" | chpasswd --root /mnt
-echo "root:$password" | chpasswd --root /mnt
