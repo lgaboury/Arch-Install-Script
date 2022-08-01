@@ -12,11 +12,15 @@ Assumes that partition nvme0n1p5 is used for the installation and will set exist
    
 3. Clone this repository:  
    ```
-   git clone https://github.com/lgaboury/Arch_Install_Script.git
+   git clone https://github.com/lgaboury/Arch-Install-Script.git
    ```
-4. Go into Arch_Install_Script folder:  
+4. Go into Arch-Install-Script folder:  
    ```
-   cd Arch_Install_Script
+   cd Arch-Install-Script
+   ```
+4. Make install script executable:
+   ```
+   chmod +x install_base_arch_alongside_windows.sh
    ```
 5. Run installation script:  
    ```
