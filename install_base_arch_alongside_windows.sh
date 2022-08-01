@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ##################################################################################################
-#  IMPORTANT NOTES                                                                               #
+# IMPORTANT NOTES                                                                               #
 ##################################################################################################
-# 1.  This script is very basic and specific to my SSD existing partitions and my wireless card. #
+# 1.  This script is very basic and specific to my Laptop hardware and SSD existing partitions.  #
 # 2.  It uses Windows 11 existing ESP partition and will install systemd-boot boot loader.       #
 # 3.  It does not conduct any kind of error checking.                                            #
 # 4.  Review the script entirely, adjust for your desired installation and use at your own risk. #
@@ -16,35 +16,17 @@ clear
 echo "Starting Arch Linux base system installation..."
 sleep 5
 
-echo
-echo "Enabling wifi..."
-iwctl station wlan0 connect dlink
-sleep 5
-
 ### Update the system clock
 clear
 echo "Updating system clock..."
 timedatectl set-ntp true
-
 sleep 5
-
-### Parition the disk
-#clear
-#echo "Partitioning disk..."
-#echo
-#sgdisk -Z /dev/nvme0n1
-#sgdisk -n 1:0:+300M -t 1:ef00 -n 2:0:+8G -t 2:8200 -n 3:0:0 -t 3:8300 /dev/nvme0n1
-#echo
-#sleep 5
 
 ### Format the partitions
 clear
 echo "Formatting partitions..."
 echo
-#mkfs.fat -F32 /dev/nvme0n1p1
 mkfs.ext4 /dev/nvme0n1p5
-#mkswap /dev/nvme0n1p2
-
 sleep 5
 
 ### Mount file systems
@@ -53,12 +35,12 @@ echo "Mounting file systems..."
 echo
 mount /dev/nvme0n1p5 /mnt
 mount --mkdir /dev/nvme0n1p1 /mnt/boot
-#swapon /dev/nvme0n1p2
 echo
+# Show resulting block devices
 lsblk
 sleep 5
 
-### Show the mirrors
+### Update and show mirrors
 clear
 echo "Configuring reflector..."
 echo
@@ -116,7 +98,6 @@ clear
 echo "Setting timezone..."
 arch-chroot /mnt ln -sf /usr/share/zoneinfo/America/Winnipeg /etc/localtime
 arch-chroot /mnt hwclock --systohc
-arch-chroot /mnt timedatectl set-local-rtc 1
 sleep 5
 
 ### Set localization
@@ -155,12 +136,6 @@ arch-chroot /mnt useradd -m -G wheel,input $username
 echo "Setting password for $username..."
 arch-chroot /mnt passwd $username
 
-# mkdir -p /mnt/mnt/NAS
-# cat >> /mnt/etc/fstab <<EOF
-# //NAS.local/luc	/mnt/NAS	cifs	rw,user=luc,pass=trapline,sec=ntlm,vers=1.0,uid=$username,_netdev,x-systemd.automount 0 0
-# EOF
-# sleep 5
-
 ### Set boot manager systemd-boot
 clear
 echo "Setting boot manager..."
@@ -179,7 +154,6 @@ initrd	/intel-ucode.img
 initrd	/initramfs-linux.img
 options root=UUID=$(blkid -s UUID -o value /dev/nvme0n1p5) rw quiet loglevel=3 rd.systemd.show_status=auto rd.udev.log_level=3
 EOF
-
 arch-chroot /mnt systemctl enable systemd-boot-update.service
 sleep 5
 
