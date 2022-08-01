@@ -1,4 +1,4 @@
-# Arch-Insall-Script  
+# Arch-Install-Script  
 This script installs an Arch Linux base system alongside Windows.  
 Assumes that partition nvme0n1p5 is used for the installation and will set existing nvme0n1p1 partition as ESP.  
 
@@ -12,7 +12,7 @@ Assumes that partition nvme0n1p5 is used for the installation and will set exist
    
 3. Clone this repository:  
    ```
-   git clone https://github.com/lgaboury/Arch_install_Script.git
+   git clone https://github.com/lgaboury/Arch_Install_Script.git
    ```
 4. Go into Arch_Install_Script folder:  
    ```
