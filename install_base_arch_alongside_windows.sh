@@ -1,6 +1,17 @@
 #!/bin/bash
 
+##################################################################################################
+#  IMPORTANT NOTES                                                                               #
+##################################################################################################
+# 1.  This script is very basic and specific to my SSD existing partitions and my wireless card. #
+# 2.  It uses Windows 11 existing ESP partition and will install systemd-boot boot loader.       #
+# 3.  It does not conduct any kind of error checking.                                            #
+# 4.  Review the script entirely, adjust for your desired installation and use at your own risk. #
+##################################################################################################
+
+# stop reflector service in order to use specific parameters later
 systemctl stop reflector.service
+
 clear
 echo "Starting Arch Linux base system installation..."
 sleep 5
