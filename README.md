@@ -1,4 +1,4 @@
-# Arch-Insall-Scripts
+# Arch-Insall-Script
 
 echo
 echo "Enabling wifi..."
