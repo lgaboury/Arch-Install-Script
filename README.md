@@ -9,6 +9,14 @@ Assumes that partition nvme0n1p5 is used for the installation and will set exist
    iwctl station wlan0 connect <SSID>
    ```
    Replace ```<SSID>``` with your actual wifi SSID.
+3. Update pacman databases:
+   ```
+   pacman -Sy
+   ```
+4. Install git:
+   ```
+   pacman -S git
+   ```
    
 3. Clone this repository:  
    ```
