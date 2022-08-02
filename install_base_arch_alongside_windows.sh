@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ##################################################################################################
-# IMPORTANT NOTES                                                                               #
+# IMPORTANT NOTES                                                                                #
 ##################################################################################################
 # 1.  This script is very basic and specific to my Laptop hardware and SSD existing partitions.  #
 # 2.  It uses Windows 11 existing ESP partition and will install systemd-boot boot loader.       #
