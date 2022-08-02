@@ -10,7 +10,7 @@
 ##################################################################################################
 
 # stop reflector service in order to use specific parameters later
-systemctl stop reflector.service
+# systemctl stop reflector.service
 
 clear
 echo "Starting Arch Linux base system installation..."
@@ -41,14 +41,14 @@ lsblk
 sleep 5
 
 ### Update and show mirrors
-clear
-echo "Configuring reflector..."
-echo
-reflector --download-timeout 30 --fastest 5 --age 8 --sort rate -c canada --protocol https --save /etc/pacman.d/mirrorlist
-echo "Mirrors:"
-echo
-cat /etc/pacman.d/mirrorlist
-sleep 5
+#clear
+#echo "Configuring reflector..."
+#echo
+#reflector --download-timeout 30 --fastest 5 --age 8 --sort rate -c canada --protocol https --save /etc/pacman.d/mirrorlist
+#echo "Mirrors:"
+#echo
+#cat /etc/pacman.d/mirrorlist
+#sleep 5
 
 ### Install essential packages
 clear
