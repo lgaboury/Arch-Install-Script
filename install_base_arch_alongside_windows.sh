@@ -49,6 +49,8 @@ sleep 5
 clear
 echo "Configuring reflector..."
 echo
+sed -i 's/#Color/Color/' /etc/pacman.conf
+sed -i 's/#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 reflector --download-timeout 30 --fastest 5 --age 8 --sort rate -c canada --protocol https --save /etc/pacman.d/mirrorlist
 echo "Mirrors:"
 echo
