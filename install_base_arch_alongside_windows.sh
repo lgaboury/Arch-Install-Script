@@ -16,12 +16,6 @@ clear
 echo "Starting Arch Linux base system installation..."
 sleep 5
 
-### Update keyring
-clear
-echo "Update Arch Linux Kering..."
-echo
-pacman -S archlinux-keyring
-
 ### Update the system clock
 clear
 echo "Updating system clock..."
@@ -57,6 +51,14 @@ reflector --download-timeout 30 --fastest 5 --age 8 --sort rate -c canada --prot
 echo "Mirrors:"
 echo
 cat /etc/pacman.d/mirrorlist
+sleep 5
+
+### Update pacman databases and keyring
+clear
+echo "Update pacman databases and keyring..."
+echo
+pacman -Sy
+pacman -S archlinux-keyring
 sleep 5
 
 ### Install essential packages
