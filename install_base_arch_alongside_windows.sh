@@ -69,7 +69,7 @@ pacstrap /mnt base linux linux-firmware linux-headers intel-ucode sof-firmware \
 	e2fsprogs bluez bluez-utils cups cups-pdf hplip system-config-printer \
 	nano man-db man-pages ntfs-3g dosfstools networkmanager sudo pacman-contrib \
 	nss-mdns pipewire-pulse avahi reflector inetutils neofetch bash-completion \
-	mtools util-linux efibootmgr git base-devel xdg-user-dirs firewalld
+	mtools util-linux efibootmgr git base-devel xdg-user-dirs firewalld intel-media-driver
 sleep 5
 
 ### Set configration for newly installed packages
