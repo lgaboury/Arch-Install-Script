@@ -1,5 +1,5 @@
 # Arch-Install-Script  
-This script installs an Arch Linux base system alongside Windows.  
+This script installs an [Arch Linux](https://archlinux.org/) base system alongside [Windows 11](https://www.microsoft.com/en-ca/windows/windows-11?r=1).  
 Assumes that partition nvme0n1p5 is used for the installation and will set existing nvme0n1p1 partition as ESP.  
 
 ## How to use  
