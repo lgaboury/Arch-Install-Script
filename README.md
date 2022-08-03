@@ -30,6 +30,7 @@ Assumes that partition nvme0n1p5 is used for the installation and will set exist
    ```
    chmod +x install_base_arch_alongside_windows.sh
    ```
+4. Adjust script to your specific hardware and requirements before using.  
 5. Run installation script:  
    ```
    ./install_base_arch_alongside_windows.sh
