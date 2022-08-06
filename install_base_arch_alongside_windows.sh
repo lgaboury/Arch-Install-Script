@@ -66,7 +66,7 @@ clear
 echo "Installing packages..."
 echo
 pacstrap /mnt base linux linux-firmware linux-headers intel-ucode sof-firmware \
-	e2fsprogs bluez bluez-utils cups cups-pdf hplip system-config-printer \
+	e2fsprogs bluez bluez-utils cups cups-pdf hplip system-config-printer tlp \
 	nano man-db man-pages ntfs-3g dosfstools networkmanager sudo pacman-contrib \
 	nss-mdns pipewire-pulse avahi reflector inetutils neofetch bash-completion \
 	mtools util-linux efibootmgr git base-devel xdg-user-dirs firewalld intel-media-driver
@@ -86,6 +86,7 @@ arch-chroot /mnt systemctl enable avahi-daemon.service
 arch-chroot /mnt systemctl enable fstrim.timer
 arch-chroot /mnt systemctl enable reflector.timer
 arch-chroot /mnt systemctl enable firewalld.service
+arch-chroot /mnt systemctl enable tlp.service
 arch-chroot /mnt systemctl disable systemd-resolved.service
 arch-chroot /mnt systemctl enable cups.service
 ### Configure early Kernel Mode Setting and silence fsck
