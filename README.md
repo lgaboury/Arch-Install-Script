@@ -1,5 +1,5 @@
 # Arch-Install-Script  
-This script installs an [Arch Linux](https://archlinux.org/) base system alongside [Windows 11](https://www.microsoft.com/en-ca/windows/windows-11?r=1). The reader is still expected to have a very good understanding of the Arch Linux [Installation Guide](https://wiki.archlinux.org/title/Installation_guide). This script is only meant to automate the process for those who like me re-install Arch from scratch just for the heck of it. :)  
+This script installs an [Arch Linux](https://archlinux.org/) base system alongside [Windows 11](https://www.microsoft.com/en-ca/windows/windows-11?r=1). The reader is still expected to have a very good understanding of the Arch Linux [Installation Guide](https://wiki.archlinux.org/title/Installation_guide). This script is only meant to automate the process for those who like me re-install Arch from scratch just for the heck of it. :-)  
 
 Assumes that partition nvme0n1p5 is used for the installation and will set existing nvme0n1p1 partition as ESP.  
 
